@@ -9,5 +9,22 @@
     </head>
     <body unresolved>
         <github-user-events username="dpobel"></github-user-events>
+        <hr />
+        <fieldset>
+            <legend>Change user</legend>
+            <form>
+            <p>
+                <label for="username">Username</label>
+                <input type="text" id="username" value="dpobel">
+            </p>
+            <p><button>Change</button></p>
+            </form>
+        </fieldset>
+        <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            document.querySelector('github-user-events').username = document.getElementById('username').value;
+        });
+        </script>
     </body>
 </html>
