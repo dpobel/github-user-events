@@ -8,18 +8,20 @@
         <link rel="import" href="../github-user-events.html">
     </head>
     <body unresolved>
-        <github-user-events username="dpobel"></github-user-events>
-        <hr />
         <fieldset>
             <legend>Change user</legend>
             <form>
             <p>
                 <label for="username">Username</label>
-                <input type="text" id="username" value="dpobel">
+                <input type="text" id="username" value="dpobel" required>
             </p>
             <p><button>Change</button></p>
             </form>
         </fieldset>
+
+        <br>
+
+        <github-user-events username="dpobel"></github-user-events>
         <script>
         document.querySelector('form').addEventListener('submit', function (e) {
             e.preventDefault();
