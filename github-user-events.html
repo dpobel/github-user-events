@@ -11,7 +11,8 @@
         <p>{{ username ]] activity on Github</p>
         <template is="dom-repeat" items="[[ events ]]" as="event">
             <div>
-                [[ event.type ]] [[ event.repository.name ]]
+                <time>[[ event.created ]]</time>
+                [[ event.type ]] [[ event.preposition ]] [[ event.repository.name ]]
             </div>
         </template>
         <iron-ajax auto handle-as="json" last-response="{{ rawEvents }}" on-error="_handleError"></iron-ajax>
@@ -44,18 +45,45 @@
                 type: Array,
                 reflectToAttribute: false,
                 readOnly: true,
-                computed: '_prepareEvents(rawEvents)',
+                computed: '_buildEventList(rawEvents)',
             },
+
+            eventParsers: {
+                type: Object,
+                reflectToAttribute: false,
+                readOnly: true,
+                value: {
+                    PushEvent: function (rawEvent, event) {
+                        event.preposition = "to";
+                        return event;
+                    },
+                    IssueCommentEvent: function (rawEvent, event) {
+                        event.preposition = "in";
+                        return event;
+                    },
+                    PullRequestReviewCommentEvent: function (rawEvent, event) {
+                        event.preposition = "in";
+                        return event;
+                    },
+                },
+            }
         },
 
-        _prepareEvents: function (rawEvents) {
-            return rawEvents.map(this._createEvent, this);
+        _buildEventList: function (rawEvents) {
+            return rawEvents.map(this._createEventObject, this);
         },
 
-        _createEvent: function (rawEvent) {
-            //var event = {};
-            // TODO unify events to ease display in the list
-            return rawEvent;
+        _createEventObject: function (rawEvent) {
+            var event = {},
+                parsers = this.eventParsers;
+
+            event.type = rawEvent.type.replace(/Event$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
+            event.created = (new Date(rawEvent.created_at)).toLocaleString();
+            event.repository = rawEvent.repo;
+            if ( parsers[rawEvent.type] ) {
+                event = parsers[rawEvent.type].call(this, rawEvent, event);
+            }
+            return event;
         },
 
         _buildUserEventsUrl: function (username) {
