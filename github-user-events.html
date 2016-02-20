@@ -1,0 +1,22 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="github-user-events">
+    <template>
+        <style>
+        :host {
+            display: block;
+        }
+        </style>
+        <p>{{ username }} on Github</p>
+    </template>
+
+    <script>
+    Polymer({
+        is: 'github-user-events',
+
+        properties: {
+            username: String,
+        },
+    });
+    </script>
+</dom-module>

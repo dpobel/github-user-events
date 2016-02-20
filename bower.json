@@ -1,0 +1,27 @@
+{
+  "name": "github-user-events",
+  "version": "1.0.0",
+  "authors": [
+    "Damien Pobel <damien@pobel.fr>"
+  ],
+  "description": "An element generating events of a given Github user.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "github"
+  ],
+  "main": "github-user-events.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/dpobel/github-user-events/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "^4.0.0"
+  }
+}
