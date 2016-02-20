@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
 
 <dom-module id="github-user-events">
     <template>
@@ -7,7 +8,8 @@
             display: block;
         }
         </style>
-        <p>{{ username }} on Github</p>
+        <p>{{ username }} activity on Github</p>
+        <iron-ajax auto handle-as="json" on-response="_handleResponse" on-error="_handleError"></iron-ajax>
     </template>
 
     <script>
@@ -16,6 +18,28 @@
 
         properties: {
             username: String,
+        },
+
+        _buildUrl: function () {
+            return `https://api.github.com/users/${this.username}/events`;
+        },
+
+        _fetchEvents: function () {
+            if ( this.username ) {
+                this.$$('iron-ajax').url = this._buildUrl();
+            }
+        },
+
+        _handleResponse: function () {
+            console.log(arguments);
+        },
+
+        _handleError: function () {
+            console.log(arguments);
+        },
+
+        ready: function () {
+            this._fetchEvents();
         },
     });
     </script>
