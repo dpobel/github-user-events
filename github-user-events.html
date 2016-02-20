@@ -8,13 +8,13 @@
             display: block;
         }
         </style>
-        <p>{{ username }} activity on Github</p>
-        <template is="dom-repeat" items="{{events}}" as="event">
+        <p>{{ username ]] activity on Github</p>
+        <template is="dom-repeat" items="[[ events ]]" as="event">
             <div>
-                {{event.type}} on {{ event.repo.name }}
+                [[ event.type ]] [[ event.repository.name ]]
             </div>
         </template>
-        <iron-ajax auto handle-as="json" last-response="{{events}}" on-error="_handleError"></iron-ajax>
+        <iron-ajax auto handle-as="json" last-response="{{ rawEvents }}" on-error="_handleError"></iron-ajax>
     </template>
 
     <script>
@@ -35,10 +35,27 @@
                 computed: '_buildUserEventsUrl(username)',
             },
 
-            events: {
+            rawEvents: {
                 type: Array,
                 reflectToAttribute: false,
             },
+
+            events: {
+                type: Array,
+                reflectToAttribute: false,
+                readOnly: true,
+                computed: '_prepareEvents(rawEvents)',
+            },
+        },
+
+        _prepareEvents: function (rawEvents) {
+            return rawEvents.map(this._createEvent, this);
+        },
+
+        _createEvent: function (rawEvent) {
+            //var event = {};
+            // TODO unify events to ease display in the list
+            return rawEvents;
         },
 
         _buildUserEventsUrl: function (username) {
