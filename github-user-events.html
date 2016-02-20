@@ -2,6 +2,7 @@
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../paper-card/paper-card.html">
 <link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-spinner/paper-spinner-lite.html">
 
 <dom-module id="github-user-events">
     <template>
@@ -10,6 +11,12 @@
             display: block;
             --paper-card-header-color: #fff;
             --paper-card-background-color: #283593;
+        }
+        :host .item-loading {
+            display: none;
+        }
+        :host([loading]) .item-loading {
+            display: flex;
         }
         paper-item[disabled] {
             color: #000;
@@ -22,6 +29,11 @@
         }
         </style>
         <paper-card elevation="2" heading$="[[ username ]] activity on Github">
+            <paper-item class="item-loading" disabled>
+                <paper-item-body>
+                    <paper-spinner-lite active></paper-spinner-lite>
+                </pager-item-body>
+            </paper-item>
             <template is="dom-repeat" items="[[ events ]]" as="event">
                 <paper-item disabled>
                     <paper-item-body two-line>
@@ -35,7 +47,7 @@
                 </paper-item>
             </template>
         </paper-card>
-        <iron-ajax auto handle-as="json" last-response="{{ rawEvents }}" on-error="_handleError"></iron-ajax>
+        <iron-ajax auto handle-as="json" on-response="_unsetLoading" last-response="{{ rawEvents }}" on-error="_handleError"></iron-ajax>
     </template>
 
     <script>
@@ -47,6 +59,12 @@
                 type: String,
                 reflectToAttribute: true,
                 observer: '_fetchEvents',
+            },
+
+            loading: {
+                type: Boolean,
+                reflectToAttribute: true,
+                value: true,
             },
 
             eventsUrl: {
@@ -89,6 +107,10 @@
             }
         },
 
+        _unsetLoading: function () {
+            this.loading = false;
+        },
+
         _buildEventList: function (rawEvents) {
             return rawEvents.map(this._createEventObject, this);
         },
@@ -117,7 +139,7 @@
         },
 
         _handleError: function () {
-            console.log(arguments);
+            this.loading = false;
         },
 
         ready: function () {
