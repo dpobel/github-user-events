@@ -9,7 +9,12 @@
         }
         </style>
         <p>{{ username }} activity on Github</p>
-        <iron-ajax auto handle-as="json" on-response="_handleResponse" on-error="_handleError"></iron-ajax>
+        <template is="dom-repeat" items="{{events}}" as="event">
+            <div>
+                {{event.type}} on {{ event.repo.name }}
+            </div>
+        </template>
+        <iron-ajax auto handle-as="json" last-response="{{events}}" on-error="_handleError"></iron-ajax>
     </template>
 
     <script>
@@ -17,21 +22,33 @@
         is: 'github-user-events',
 
         properties: {
-            username: String,
+            username: {
+                type: String,
+                reflectToAttribute: true,
+                observer: '_fetchEvents',
+            },
+
+            eventsUrl: {
+                type: String,
+                reflectToAttribute: false,
+                readOnly: true,
+                computed: '_buildUserEventsUrl(username)',
+            },
+
+            events: {
+                type: Array,
+                reflectToAttribute: false,
+            },
         },
 
-        _buildUrl: function () {
-            return `https://api.github.com/users/${this.username}/events`;
+        _buildUserEventsUrl: function (username) {
+            return `https://api.github.com/users/${username}/events`;
         },
 
         _fetchEvents: function () {
             if ( this.username ) {
-                this.$$('iron-ajax').url = this._buildUrl();
+                this.$$('iron-ajax').url = this.eventsUrl;
             }
-        },
-
-        _handleResponse: function () {
-            console.log(arguments);
         },
 
         _handleError: function () {
