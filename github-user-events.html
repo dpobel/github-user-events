@@ -1,20 +1,40 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../paper-item/paper-item.html">
 
 <dom-module id="github-user-events">
     <template>
         <style>
         :host {
             display: block;
+            --paper-card-header-color: #fff;
+            --paper-card-background-color: #283593;
+        }
+        paper-item[disabled] {
+            color: #000;
+        }
+        paper-item:nth-child(odd) {
+            background: #E0E0E0;
+        }
+        paper-item:nth-child(even) {
+            background: #FAFAFA;
         }
         </style>
-        <p>{{ username ]] activity on Github</p>
-        <template is="dom-repeat" items="[[ events ]]" as="event">
-            <div>
-                <time>[[ event.created ]]</time>
-                [[ event.type ]] [[ event.preposition ]] [[ event.repository.name ]]
-            </div>
-        </template>
+        <paper-card elevation="2" heading$="[[ username ]] activity on Github">
+            <template is="dom-repeat" items="[[ events ]]" as="event">
+                <paper-item disabled>
+                    <paper-item-body two-line>
+                        <time>[[ event.created ]]</time>
+                        <div class="secondary">
+                            [[ event.type ]]
+                            [[ event.preposition ]]
+                            [[ event.repository.name ]]
+                        </div>
+                    </paper-item-body>
+                </paper-item>
+            </template>
+        </paper-card>
         <iron-ajax auto handle-as="json" last-response="{{ rawEvents }}" on-error="_handleError"></iron-ajax>
     </template>
 
