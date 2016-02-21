@@ -4,6 +4,15 @@
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../paper-spinner/paper-spinner-lite.html">
 
+<!--
+An element generating the activity of a user on Github.
+
+Example:
+
+    <github-user-events username="dpobel"></github-user-event>
+
+@demo demo/index.html
+-->
 <dom-module id="github-user-events">
     <template>
         <style>
@@ -67,24 +76,37 @@
         is: 'github-user-events',
 
         properties: {
+            /**
+             * Username of the user on Github
+             */
             username: {
                 type: String,
                 reflectToAttribute: true,
                 observer: '_fetchEvents',
             },
 
+            /**
+             * Indicates whether the events are loading
+             */
             loading: {
                 type: Boolean,
                 reflectToAttribute: true,
                 value: true,
             },
 
+            /**
+             * Indicates whether the last request was on error
+             */
             error: {
                 type: Boolean,
                 reflectToAttribute: true,
                 value: false,
             },
 
+            /**
+             * Returns the Github API URL to get the user's events. It
+             * is generated from the username.
+             */
             eventsUrl: {
                 type: String,
                 reflectToAttribute: false,
@@ -92,11 +114,17 @@
                 computed: '_buildUserEventsUrl(username)',
             },
 
+            /**
+             * Array of the user events as returned by the Github API
+             */
             rawEvents: {
                 type: Array,
                 reflectToAttribute: false,
             },
 
+            /**
+             * Array of events unified to be ready to be displayed.
+             */
             events: {
                 type: Array,
                 reflectToAttribute: false,
@@ -104,6 +132,11 @@
                 computed: '_buildEventList(rawEvents)',
             },
 
+            /**
+             * List of event parser stored as an Object. The keys are the Github
+             * event type, the values are functions taking an event from `rawEvents`
+             * and the `event` object currently build.
+             */
             eventParsers: {
                 type: Object,
                 reflectToAttribute: false,
@@ -125,14 +158,30 @@
             }
         },
 
+        /**
+         * Unsets the loading flag.
+         */
         _unsetLoading: function () {
             this.loading = false;
         },
 
+        /**
+         * Builds the unified event list from the `rawEvents` list.
+         *
+         * @param {Array} rawEvents
+         * @return Array
+         */
         _buildEventList: function (rawEvents) {
             return rawEvents ? rawEvents.map(this._createEventObject, this) : [];
         },
 
+        /**
+         * Creates a unified event object from a raw event. It applies the parsers
+         * stored in the `eventParsers` properties.
+         *
+         * @param {Object} rawEvent
+         * @return {Object}
+         */
         _createEventObject: function (rawEvent) {
             var event = {},
                 parsers = this.eventParsers;
@@ -146,10 +195,19 @@
             return event;
         },
 
+        /**
+         * Builds the Github API URL from the `username`.
+         *
+         * @param {string} username
+         * @return {string}
+         */
         _buildUserEventsUrl: function (username) {
             return `https://api.github.com/users/${username}/events`;
         },
 
+        /**
+         * Triggers the request to fetch the Github events.
+         */
         _fetchEvents: function () {
             if ( this.username ) {
                 this.$$('iron-ajax').url = this.eventsUrl;
