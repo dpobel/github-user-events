@@ -12,10 +12,14 @@
             --paper-card-header-color: #fff;
             --paper-card-background-color: #283593;
         }
+        :host .item-error,
         :host .item-loading {
             display: none;
         }
         :host([loading]) .item-loading {
+            display: flex;
+        }
+        :host([error]) .item-error {
             display: flex;
         }
         paper-card {
@@ -37,6 +41,11 @@
                     <paper-spinner-lite active></paper-spinner-lite>
                 </pager-item-body>
             </paper-item>
+            <paper-item class="item-error" disabled>
+                <paper-item-body>
+                    An error occurred
+                </pager-item-body>
+            </paper-item>
             <template is="dom-repeat" items="[[ events ]]" as="event">
                 <paper-item disabled>
                     <paper-item-body two-line>
@@ -50,7 +59,7 @@
                 </paper-item>
             </template>
         </paper-card>
-        <iron-ajax auto handle-as="json" on-response="_unsetLoading" last-response="{{ rawEvents }}" on-error="_handleError"></iron-ajax>
+        <iron-ajax auto handle-as="json" on-response="_unsetLoading" last-response="{{ rawEvents }}" last-error="{{ error }}" on-error="_unsetLoading"></iron-ajax>
     </template>
 
     <script>
@@ -68,6 +77,12 @@
                 type: Boolean,
                 reflectToAttribute: true,
                 value: true,
+            },
+
+            error: {
+                type: Boolean,
+                reflectToAttribute: true,
+                value: false,
             },
 
             eventsUrl: {
@@ -115,7 +130,7 @@
         },
 
         _buildEventList: function (rawEvents) {
-            return rawEvents.map(this._createEventObject, this);
+            return rawEvents ? rawEvents.map(this._createEventObject, this) : [];
         },
 
         _createEventObject: function (rawEvent) {
@@ -139,10 +154,6 @@
             if ( this.username ) {
                 this.$$('iron-ajax').url = this.eventsUrl;
             }
-        },
-
-        _handleError: function () {
-            this.loading = false;
         },
 
         ready: function () {
