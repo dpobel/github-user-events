@@ -191,9 +191,7 @@ Example:
             this.$$('iron-ajax').url = this._eventsUrl;
         },
 
-        ready: function () {
-            this._fetchEvents();
-        },
+        ready: this._fetchEvents,
     });
     </script>
 </dom-module>
