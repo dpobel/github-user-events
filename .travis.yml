@@ -1,0 +1,14 @@
+language: node_js
+sudo: false
+before_script:
+    - npm install -g bower polylint web-component-tester
+    - bower install
+node_js: stable
+addons:
+    firefox: latest
+    apt:
+        packages:
+            - google-chrome-stable
+script:
+    - polylint
+    - xvfb-run wct
