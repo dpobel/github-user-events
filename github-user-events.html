@@ -68,7 +68,7 @@ Example:
                 </paper-item>
             </template>
         </paper-card>
-        <iron-ajax auto handle-as="json" loading="{{ loading }}" last-response="{{ rawEvents }}" last-error="{{ error }}"></iron-ajax>
+        <iron-ajax auto handle-as="json" loading="{{ loading }}" on-response="_buildEventList" last-error="{{ error }}"></iron-ajax>
     </template>
 
     <script>
@@ -96,7 +96,7 @@ Example:
             },
 
             /**
-             * Indicates whether the last request was on error
+             * Indicates whether the last request was an error
              */
             error: {
                 type: Boolean,
@@ -105,104 +105,82 @@ Example:
             },
 
             /**
-             * Returns the Github API URL to get the user's events. It
-             * is generated from the username.
-             */
-            _eventsUrl: {
-                type: String,
-                reflectToAttribute: false,
-                readOnly: true,
-                computed: '_buildUserEventsUrl(username)',
-            },
-
-            /**
-             * Array of the user events as returned by the Github API
-             */
-            rawEvents: {
-                type: Array,
-                reflectToAttribute: false,
-            },
-
-            /**
-             * Array of events unified to be ready to be displayed.
+             * Array of events to be displayed
              */
             events: {
                 type: Array,
                 reflectToAttribute: false,
-                readOnly: true,
-                computed: '_buildEventList(rawEvents)',
+                value: [],
             },
-
-            /**
-             * List of event parser stored as an Object. The keys are the Github
-             * event type, the values are functions taking an event from `rawEvents`
-             * and the `event` object currently build.
-             */
-            eventParsers: {
-                type: Object,
-                reflectToAttribute: false,
-                readOnly: true,
-                value: {
-                    PushEvent: function (rawEvent, event) {
-                        event.preposition = "to";
-                        return event;
-                    },
-                    IssueCommentEvent: function (rawEvent, event) {
-                        event.preposition = "in";
-                        return event;
-                    },
-                    PullRequestReviewCommentEvent: function (rawEvent, event) {
-                        event.preposition = "in";
-                        return event;
-                    },
-                },
-            }
-        },
-
-        _resetEvents: function (oldLoading, loading) {
-            if ( !loading ) {
-                this.rawEvents = [];
-            }
         },
 
         /**
-         * Builds the unified event list from the `rawEvents` list.
-         *
-         * @param {Array} rawEvents
-         * @return Array
+         * Url to use to fetch the events for the user.
          */
-        _buildEventList: function (rawEvents) {
-            return rawEvents ? rawEvents.map(this._createEventObject, this) : [];
+        get _eventsUrl () {
+            return `https://api.github.com/users/${this.username}/events`;
         },
 
         /**
-         * Creates a unified event object from a raw event. It applies the parsers
-         * stored in the `eventParsers` properties.
+         * List of event parser stored as an Object. The keys are the Github
+         * event type, the values are functions taking an event from `rawEvents`
+         * and the `event` object currently build.
+         */
+        _eventParsers: {
+            PushEvent: function (rawEvent, event) {
+                event.preposition = "to";
+                return event;
+            },
+            IssueCommentEvent: function (rawEvent, event) {
+                event.preposition = "in";
+                return event;
+            },
+            PullRequestReviewCommentEvent: function (rawEvent, event) {
+                event.preposition = "in";
+                return event;
+            },
+        },
+
+        /**
+         * loading observer. It resets the events list when loading becomes true.
+         *
+         * @param {Boolean} loading
+         */
+        _resetEvents: function (loading) {
+            if ( loading ) {
+                this.events = [];
+            }
+        },
+
+        /**
+         * iron-ajax onResponse handler. It builds the list of events from the response.
+         *
+         * @param {Object} event response event
+         * @param {Object} ironRequest
+         */
+        _buildEventList: function (event, ironRequest) {
+            this.events = ironRequest.parseResponse().map(this._createEventObject, this);
+        },
+
+        /**
+         * Creates a unified event object from a *raw event* returned by the
+         * Github API. It applies the parsers stored in the `eventParsers`
+         * properties.
          *
          * @param {Object} rawEvent
          * @return {Object}
          */
         _createEventObject: function (rawEvent) {
             var event = {},
-                parsers = this.eventParsers;
+                parsers = this._eventParsers;
 
             event.type = rawEvent.type.replace(/Event$/, '').replace(/([a-z])([A-Z])/g, '$1 $2');
-            event.created = (new Date(rawEvent.created_at)).toLocaleString();
+            event.created = (new Date(rawEvent.created_at)).toUTCString();
             event.repository = rawEvent.repo;
             if ( parsers[rawEvent.type] ) {
                 event = parsers[rawEvent.type].call(this, rawEvent, event);
             }
             return event;
-        },
-
-        /**
-         * Builds the Github API URL from the `username`.
-         *
-         * @param {string} username
-         * @return {string}
-         */
-        _buildUserEventsUrl: function (username) {
-            return `https://api.github.com/users/${username}/events`;
         },
 
         /**
