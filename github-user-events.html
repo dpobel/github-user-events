@@ -68,7 +68,7 @@ Example:
                 </paper-item>
             </template>
         </paper-card>
-        <iron-ajax auto handle-as="json" on-response="_unsetLoading" last-response="{{ rawEvents }}" last-error="{{ error }}" on-error="_unsetLoading"></iron-ajax>
+        <iron-ajax auto handle-as="json" loading="{{ loading }}" last-response="{{ rawEvents }}" last-error="{{ error }}"></iron-ajax>
     </template>
 
     <script>
@@ -91,7 +91,8 @@ Example:
             loading: {
                 type: Boolean,
                 reflectToAttribute: true,
-                value: true,
+                value: false,
+                observer: '_resetEvents',
             },
 
             /**
@@ -158,11 +159,10 @@ Example:
             }
         },
 
-        /**
-         * Unsets the loading flag.
-         */
-        _unsetLoading: function () {
-            this.loading = false;
+        _resetEvents: function (oldLoading, loading) {
+            if ( !loading ) {
+                this.rawEvents = [];
+            }
         },
 
         /**
@@ -209,9 +209,7 @@ Example:
          * Triggers the request to fetch the Github events.
          */
         _fetchEvents: function () {
-            if ( this.username ) {
-                this.$$('iron-ajax').url = this.eventsUrl;
-            }
+            this.$$('iron-ajax').url = this._eventsUrl;
         },
 
         ready: function () {
