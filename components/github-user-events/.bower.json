@@ -1,0 +1,40 @@
+{
+  "name": "github-user-events",
+  "authors": [
+    "Damien Pobel <damien@pobel.fr>"
+  ],
+  "description": "An element generating events of a given Github user.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "github"
+  ],
+  "main": "github-user-events.html",
+  "license": "http://polymer.github.io/LICENSE.txt",
+  "homepage": "https://github.com/dpobel/github-user-events/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.1.1",
+    "paper-item": "PolymerElements/paper-item#^1.1.3",
+    "paper-card": "PolymerElements/paper-card#^1.1.1",
+    "paper-spinner": "PolymerElements/paper-spinner#^1.1.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^4.2.1"
+  },
+  "_release": "8c13c90c56",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "8c13c90c569bcdd060b6df88f05327a48fb6e133"
+  },
+  "_source": "git://github.com/dpobel/github-user-events.git",
+  "_target": "master",
+  "_originalSource": "dpobel/github-user-events",
+  "_direct": true
+}

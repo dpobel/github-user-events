@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+        <title>github-user-events Demo</title>
+        <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+        <link rel="import" href="../github-user-events.html">
+    </head>
+    <body unresolved>
+        <fieldset>
+            <legend>Change user</legend>
+            <form>
+            <p>
+                <label for="username">Username</label>
+                <input type="text" id="username" value="dpobel" required>
+            </p>
+            <p><button>Change</button></p>
+            </form>
+        </fieldset>
+
+        <br>
+
+        <github-user-events username="dpobel"></github-user-events>
+        <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            document.querySelector('github-user-events').username = document.getElementById('username').value;
+        });
+        </script>
+    </body>
+</html>
