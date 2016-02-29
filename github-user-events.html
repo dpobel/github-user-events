@@ -119,7 +119,7 @@ Example:
          * Url to use to fetch the events for the user.
          */
         get _eventsUrl () {
-            return `https://api.github.com/users/${this.username}/events`;
+            return 'https://api.github.com/users/' + this.username + '/events';
         },
 
         /**
